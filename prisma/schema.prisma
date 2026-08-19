@@ -1,0 +1,39 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Ubah provider sesuai database yang kamu pakai (mysql / postgresql / sqlite)
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -------------------------------------------------
+// SKEMA DATABASE
+// -------------------------------------------------
+
+model Konser {
+  id          Int      @id @default(autoincrement())
+  nama        String
+  lokasi      String
+  tanggal     DateTime
+  deskripsi   String?  // Tanda tanya (?) berarti boleh kosong (opsional)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relasi: Satu konser bisa punya banyak jenis tiket
+  tiket       Tiket[]  
+}
+
+model Tiket {
+  id          Int      @id @default(autoincrement())
+  jenis       String   // Contoh: "VIP", "Festival"
+  harga       Int
+  stok        Int
+  
+  // Relasi kembali ke tabel Konser
+  konserId    Int
+  konser      Konser   @relation(fields: [konserId], references: [id])
+}
